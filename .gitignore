@@ -2,3 +2,8 @@
 *.pyc
 docs/build/doctrees/
 .pylint.d/
+pynlo.egg-info/dependency_links.txt
+pynlo.egg-info/PKG-INFO
+pynlo.egg-info/requires.txt
+pynlo.egg-info/SOURCES.txt
+pynlo.egg-info/top_level.txt
