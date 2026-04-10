@@ -17,17 +17,31 @@ Features:
 - ...and much more!
 
 ## Installation
+
 ### Installing to Use
-PyNLO requires Python 3. If you do not already have Python, the [Miniconda](https://docs.conda.io/en/latest/miniconda.html) distribution is a good place to start. With python installed, run,
 
-    pip install git+https://github.com/UCBoulder/PyNLO.git
+PyNLO is designed to work most easily with the [miniconda](https://docs.conda.io/en/latest/miniconda.html) distribution, but uses [unidep](https://unidep.readthedocs.io/en/latest/index.html) to allow compatibility with `pip`. For a minimal install using `conda`, run,
 
-to install `pynlo` directly from this repository. Test out your installation with the scripts in the examples folder.
+    git clone https://github.com/UCBoulder/PyNLO.git
+    cd pynlo
+    conda activate base
+    conda install -c conda-forge unidep=3
+    unidep install -n pynlo .
+    conda activate pynlo
 
-Add the ``--no-deps`` option if in a conda environment, in which case, you should separately install the dependencies using the ``conda install`` command. PyNLO depends on the `numpy`, `scipy`, `numba`, and `mkl_fft` packages. The `matplotlib` package is necessary to view real-time simulation updates and to run the example code.
+to clone this repo to your machine and install it in a new `conda` environment named `pynlo`. Test out your installation with the scripts in the examples folder. These also require the `matplotlib` package.
+
 ### Installing to Develop
-If you're looking to make changes to the source code of `pynlo`, it is highly recommeded that you clone the repository with `git` and install as an editable package with,
-	pip install -e <path/to/pynlo>
+
+If you're looking to make changes to the source code of `pynlo`, add the `-e` flag so that changes made on the local version of the repository are reflected in your local scripts:
+
+    git clone https://github.com/UCBoulder/PyNLO.git
+    cd pynlo
+    conda activate base
+    conda install -c conda-forge unidep=3
+    unidep install -n pynlo -e .
+    conda activate pynlo
+
 
 # Contributing
 
@@ -35,5 +49,5 @@ Open an issue or discussion on the GitHub repository to add suggestions for impr
 
 
 # License
--------
+
 PyNLO is licensed under the [GNU LGPLv3 license](https://choosealicense.com/licenses/lgpl-3.0/). This means that you are free to use PyNLO for any project, but all modifications to it must be kept open source. PyNLO is provided "as is" with absolutely no warranty.
