@@ -11,7 +11,7 @@ PyNLO is intended to be used with all quantities expressed in base SI units,
 i.e. frequency in ``Hz``, time in ``s``, and energy in ``J``.
 
 """
-__version__ = '1.dev'
+__version__ = '0.2.3'
 __all__ = ["light", "medium", "device", "model", "utility"]
 
 

@@ -4,73 +4,38 @@ Aliases to fast FFT implementations and associated helper functions.
 
 """
 
-__all__ = ["fft", "ifft", "rfft", "irfft",
-           "fftshift", "ifftshift"]
+# __all__ = ["fft", "ifft", "rfft", "irfft",
+        #    "fftshift", "ifftshift"]
 
 
 # %% Imports
 
-from scipy.fft import next_fast_len, fftshift as _fftshift, ifftshift as _ifftshift
-import mkl_fft
+import os
+from scipy.fft import next_fast_len, fftshift, ifftshift 
 
+try:
+    import pyfftw.interfaces.scipy_fft as backend
+    import scipy.fft as _fft
+    _fft.set_global_backend(backend)
 
-# %% Helper Functions
+    import pyfftw
+    pyfftw.interfaces.cache.enable()
+    pyfftw.config.NUM_THREADS = os.cpu_count()
+    print('Using FFTW FFT backend')
 
-#---- FFT Shifts
-def fftshift(x, axis=-1):
-    """
-    Shift the origin from the beginning to the center of the array.
-
-    This function is used after an `fft` operation to shift from fft to monotic
-    ordering.
-
-    Parameters
-    ----------
-    x : array_like
-        Input array
-    axis : int, optional
-        The axis over which to shift. The default is the last axis.
-
-    Returns
-    -------
-    ndarray
-        The shifted array.
-
-    """
-    return _fftshift(x, axes=axis)
-
-def ifftshift(x, axis=-1):
-    """
-    Shift the origin from the center to the beginning of the array.
-
-    The inverse of fftshift. This function is used before an `fft` operation to
-    shift from monotonic to fft ordering. Although identical for even-length
-    `x`, `ifftshift` differs from `fftshift` by one sample for odd-length `x`.
-
-    Parameters
-    ----------
-    x : array_like
-        Input array.
-    axis : int, optional
-        The axis over which to shift. The default is the last axis.
-
-    Returns
-    -------
-    ndarray
-        The shifted array.
-
-    """
-    return _ifftshift(x, axes=axis)
+except ImportError:
+    import scipy.fft as _fft
+    print('Using Scipy FFT backend')
 
 
 # %% Transforms
-
-#---- FFTs
+# 
+# ---- FFTs
 def fft(x, fsc=1.0, n=None, axis=-1, overwrite_x=False):
     """
     Use MKL to perform a 1D FFT of the input array along the given axis.
 
-    Parameters
+    # 
     ----------
     x : array_like
         Input array, can be complex.
@@ -92,8 +57,8 @@ def fft(x, fsc=1.0, n=None, axis=-1, overwrite_x=False):
         The transformed array.
 
     """
-    return mkl_fft.fft(x, n=n, axis=axis, overwrite_x=overwrite_x, fwd_scale=fsc)
-
+    return fsc * _fft.fft(x, n=n, axis=axis, overwrite_x=overwrite_x, norm='backward')
+# 
 def ifft(x, fsc=1.0, n=None, axis=-1, overwrite_x=False):
     """
     Use MKL to perform a 1D IFFT of the input array along the given axis.
@@ -122,9 +87,9 @@ def ifft(x, fsc=1.0, n=None, axis=-1, overwrite_x=False):
         The transformed array.
 
     """
-    return mkl_fft.ifft(x, n=n, axis=axis, overwrite_x=overwrite_x, fwd_scale=fsc)
+    return 1/fsc * _fft.ifft(x, n=n, axis=axis, overwrite_x=overwrite_x, norm='backward')
 
-#---- Real FFTs
+# ---- Real FFTs
 def rfft(x, fsc=1.0, n=None, axis=-1):
     """
     Use MKL to perform a 1D FFT of the real input array along the given axis.
@@ -151,8 +116,8 @@ def rfft(x, fsc=1.0, n=None, axis=-1):
         The transformed array.
 
     """
-    return mkl_fft.rfft(x, n=n, axis=axis, fwd_scale=fsc)
-
+    return fsc * _fft.rfft(x, n=n, axis=axis, norm='backward')
+# 
 def irfft(x, fsc=1.0, n=None, axis=-1):
     """
     Use MKL to perform a 1D IFFT of the input array along the given axis. The
@@ -185,4 +150,4 @@ def irfft(x, fsc=1.0, n=None, axis=-1):
         The transformed array.
 
     """
-    return mkl_fft.irfft(x, n=n, axis=axis, fwd_scale=fsc)
+    return 1/fsc * _fft.irfft(x, n=n, axis=axis, norm='backward')

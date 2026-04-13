@@ -18,3 +18,4 @@ build/lib/pynlo/utility/chi2.py
 build/lib/pynlo/utility/chi3.py
 build/lib/pynlo/utility/fft.py
 build/lib/pynlo/utility/misc.py
+.vscode/settings.json

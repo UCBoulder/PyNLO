@@ -18,9 +18,12 @@ Features:
 
 ## Installation
 
-### Installing to Use
+The FFT backend [`FFTW3`](https://www.fftw.org/) makes this version of PyNLO **cross-platform**.
 
-PyNLO is designed to work most easily with the [miniconda](https://docs.conda.io/en/latest/miniconda.html) distribution, but uses [unidep](https://unidep.readthedocs.io/en/latest/index.html) to allow compatibility with `pip`. For a minimal install using `conda`, run,
+### Installing to Use
+#### Installing with `conda`
+
+PyNLO is designed to work most easily with the [miniconda](https://docs.conda.io/en/latest/miniconda.html) distribution. For a functional installation with `conda`, run,
 
     git clone https://github.com/UCBoulder/PyNLO.git
     cd pynlo
@@ -29,9 +32,14 @@ PyNLO is designed to work most easily with the [miniconda](https://docs.conda.io
     unidep install -n pynlo .
     conda activate pynlo
 
-to clone this repo to your machine and install it in a new `conda` environment named `pynlo`. Test out your installation with the scripts in the examples folder. These also require the `matplotlib` package.
+This command clones the repo to your machine and installs it in a new `conda` environment named `pynlo`. Test out your installation with the scripts in the examples folder. 
+
+#### Installing with `pip`
+
+PyNLO is designed to use with `conda` but uses [`unidep`](https://unidep.readthedocs.io/en/latest/index.html) for packaging, which has compatibility with `pip`. However, PyNLO relies on [`FFTW3`](https://www.fftw.org/), which does not ship with the `pip` distribution of `pyfftw` by default. This must be installed separately, so using `conda` (which has `FFTW3` packaged with it) is highly recommended. 
 
 ### Installing to Develop
+
 
 If you're looking to make changes to the source code of `pynlo`, add the `-e` flag so that changes made on the local version of the repository are reflected in your local scripts:
 
