@@ -21,6 +21,7 @@ import copy
 
 import numpy as np
 from scipy.constants import pi, h
+from scipy.special import factorial
 
 from pynlo.utility import chi1, chi2, chi3, fft
 
@@ -60,7 +61,7 @@ def taylor_series(x0, fn):
     """
     window = np.array([-1, 1])
     domain = window + x0
-    poly_coefs = [coef/np.math.factorial(n) for (n, coef) in enumerate(fn)]
+    poly_coefs = [coef/factorial(n) for (n, coef) in enumerate(fn)]
     pwr_series = np.polynomial.Polynomial(poly_coefs, domain=domain, window=window)
     return pwr_series
 
