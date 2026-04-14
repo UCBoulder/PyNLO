@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Aliases to fast FFT implementations and associated helper functions.
-
+Aliases to fast FFT implementations. Redirects to scipy methods if not
+aliased here.
 """
 
 __all__ = ["fft", "ifft", "rfft", "irfft",
@@ -26,19 +26,6 @@ except ImportError: # If FFTW3 is not installed, fall back to native Scipy
     import scipy.fft as _fft
     print('Using Scipy FFT backend')
 
-
-# %% Passthrough to Scipy methods
-
-def __getattr__(name):
-    # If it's not defined in this module, fall back to scipy.fft
-    try:
-        return getattr(_fft, name)
-    except AttributeError:
-        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
-def __dir__():
-    # Show methods in lookup
-    return sorted(set(globals()) | set(dir(_fft)))
 
 # %% Transforms
 # 
@@ -163,3 +150,17 @@ def irfft(x, fsc=1.0, n=None, axis=-1):
 
     """
     return 1/fsc * _fft.irfft(x, n=n, axis=axis, norm='backward')
+
+
+# %% Passthrough to Scipy methods
+
+def __getattr__(name):
+    # If it's not defined in this module, fall back to scipy.fft
+    try:
+        return getattr(_fft, name)
+    except AttributeError:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+def __dir__():
+    # Show methods in lookup
+    return sorted(set(globals()) | set(dir(_fft)))
