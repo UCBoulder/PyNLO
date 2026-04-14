@@ -13,7 +13,7 @@ Aliases to fast FFT implementations and associated helper functions.
 import os
 from scipy.fft import next_fast_len, fftshift, ifftshift 
 
-try:
+try: # Attempt to set backend as FFTW3
     import pyfftw.interfaces.scipy_fft as backend
     import scipy.fft as _fft
     _fft.set_global_backend(backend)
@@ -23,7 +23,7 @@ try:
     pyfftw.config.NUM_THREADS = os.cpu_count()
     print('Using FFTW FFT backend')
 
-except ImportError:
+except ImportError: # If FFTW3 is not installed, fall back to native Scipy
     import scipy.fft as _fft
     print('Using Scipy FFT backend')
 
