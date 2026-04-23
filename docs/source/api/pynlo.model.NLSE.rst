@@ -1,4 +1,4 @@
-NLSE
+﻿NLSE
 ====
 .. currentmodule:: pynlo.model
 .. autoclass:: NLSE
@@ -10,7 +10,13 @@ Methods
    :toctree:
    :caption: Methods
 
-   ~NLSE.propagate
+   ~NLSE.__init__
+   ~NLSE.estimate_step_size
+   ~NLSE.linear_operator
    ~NLSE.nonlinear_operator
+   ~NLSE.propagate
+   ~NLSE.simulate
+   ~NLSE.step
    ~NLSE.update_linearity
    ~NLSE.update_nonlinearity
+   ~NLSE.update_poling

@@ -95,7 +95,7 @@ def g2_path(n_eff, a_eff, chi2_eff, paths):
         else:
             g2 = np.mean([g2s[0, idx] * g2s[1, cpl[0]]*g2s[1, cpl[0]] for cpl in path])
             g2_p.append(g2)
-    return np.arary(g2_p)
+    return np.array(g2_p)
 
 def g2_shg(v0, v_grid, n_eff, a_eff, chi2_eff):
     """

@@ -1,4 +1,4 @@
-UPE
+﻿UPE
 ===
 .. currentmodule:: pynlo.model
 .. autoclass:: UPE
@@ -10,8 +10,14 @@ Methods
    :toctree:
    :caption: Methods
 
-   ~UPE.propagate
+   ~UPE.__init__
+   ~UPE.estimate_step_size
+   ~UPE.linear_operator
    ~UPE.nonlinear_operator
    ~UPE.nonlinear_operator_separable
+   ~UPE.propagate
+   ~UPE.simulate
+   ~UPE.step
+   ~UPE.update_linearity
    ~UPE.update_nonlinearity
    ~UPE.update_poling

@@ -10,10 +10,10 @@ Modules
    :caption: Modules
    :recursive:
 
-   pynlo.utility.chi1
-   pynlo.utility.chi2
-   pynlo.utility.chi3
-   pynlo.utility.fft
+   chi1
+   chi2
+   chi3
+   fft
 
 Functions
 ---------

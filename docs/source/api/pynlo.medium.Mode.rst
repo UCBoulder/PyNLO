@@ -1,4 +1,4 @@
-Mode
+﻿Mode
 ====
 .. currentmodule:: pynlo.medium
 .. autoclass:: Mode
@@ -10,9 +10,10 @@ Methods
    :toctree:
    :caption: Methods
 
+   ~Mode.__init__
+   ~Mode.copy
    ~Mode.d_12
    ~Mode.linear_operator
-   ~Mode.copy
 
 Attributes
 ----------
@@ -21,23 +22,23 @@ Attributes
    :toctree:
    :caption: Attributes
 
-   ~Mode.z
-   ~Mode.v_grid
-   ~Mode.rv_grid
-   ~Mode.z_mode
-   ~Mode.z_linear
-   ~Mode.z_nonlinear
+   ~Mode.D
    ~Mode.alpha
    ~Mode.beta
-   ~Mode.n
    ~Mode.beta1
-   ~Mode.n_g
-   ~Mode.v_g
    ~Mode.beta2
-   ~Mode.D
    ~Mode.g2
    ~Mode.g2_inv
    ~Mode.g2_pol
    ~Mode.g3
    ~Mode.gamma
+   ~Mode.n
+   ~Mode.n_g
    ~Mode.r3
+   ~Mode.rv_grid
+   ~Mode.v_g
+   ~Mode.v_grid
+   ~Mode.z
+   ~Mode.z_linear
+   ~Mode.z_mode
+   ~Mode.z_nonlinear

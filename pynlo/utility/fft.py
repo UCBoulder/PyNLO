@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-Aliases to fast FFT implementations and associated helper functions.
-
+Aliases to fast FFT implementations. Redirects to scipy methods if not
+aliased here.
 """
 
-# __all__ = ["fft", "ifft", "rfft", "irfft",
-        #    "fftshift", "ifftshift"]
+__all__ = ["fft", "ifft", "rfft", "irfft",
+           "fftshift", "ifftshift"]
 
 
 # %% Imports
 
 import os
-from scipy.fft import next_fast_len, fftshift, ifftshift 
 
-try:
+try: # Attempt to set backend as FFTW3
     import pyfftw.interfaces.scipy_fft as backend
     import scipy.fft as _fft
     _fft.set_global_backend(backend)
@@ -23,7 +22,7 @@ try:
     pyfftw.config.NUM_THREADS = os.cpu_count()
     print('Using FFTW FFT backend')
 
-except ImportError:
+except ImportError: # If FFTW3 is not installed, fall back to native Scipy
     import scipy.fft as _fft
     print('Using Scipy FFT backend')
 
@@ -33,9 +32,10 @@ except ImportError:
 # ---- FFTs
 def fft(x, fsc=1.0, n=None, axis=-1, overwrite_x=False):
     """
-    Use MKL to perform a 1D FFT of the input array along the given axis.
+    Performs a 1D FFT of the input array along the given axis. Uses either
+    FFTW3 or `scipy` as a backend.
 
-    # 
+    Parameters
     ----------
     x : array_like
         Input array, can be complex.
@@ -61,7 +61,8 @@ def fft(x, fsc=1.0, n=None, axis=-1, overwrite_x=False):
 # 
 def ifft(x, fsc=1.0, n=None, axis=-1, overwrite_x=False):
     """
-    Use MKL to perform a 1D IFFT of the input array along the given axis.
+    Performs a 1D IFFT of the input array along the given axis. Uses either
+    FFTW3 or `scipy` as a backend.
 
     Parameters
     ----------
@@ -92,8 +93,9 @@ def ifft(x, fsc=1.0, n=None, axis=-1, overwrite_x=False):
 # ---- Real FFTs
 def rfft(x, fsc=1.0, n=None, axis=-1):
     """
-    Use MKL to perform a 1D FFT of the real input array along the given axis.
+    Performs a 1D FFT of the real input array along the given axis.
     The output array is complex and only contains positive frequencies.
+    Uses either FFTW3 or `scipy` as a backend.
 
     The length of the transformed axis is ``n//2 + 1``.
 
@@ -120,9 +122,9 @@ def rfft(x, fsc=1.0, n=None, axis=-1):
 # 
 def irfft(x, fsc=1.0, n=None, axis=-1):
     """
-    Use MKL to perform a 1D IFFT of the input array along the given axis. The
+    Performs a 1D IFFT of the input array along the given axis. The
     input is assumed to contain only positive frequencies, and the output is
-    always real.
+    always real. Uses either FFTW3 or `scipy` as a backend.
 
     If `n` is not given the length of the transformed axis is ``2*(m-1)``,
     where `m` is the length of the transformed axis of the input. To get an odd
@@ -151,3 +153,17 @@ def irfft(x, fsc=1.0, n=None, axis=-1):
 
     """
     return 1/fsc * _fft.irfft(x, n=n, axis=axis, norm='backward')
+
+
+# %% Passthrough to Scipy methods
+
+def __getattr__(name):
+    # If it's not defined in this module, fall back to scipy.fft
+    try:
+        return getattr(_fft, name)
+    except AttributeError:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+def __dir__():
+    # Show methods in lookup
+    return sorted(set(globals()) | set(dir(_fft)))

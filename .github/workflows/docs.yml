@@ -1,0 +1,72 @@
+name: Build and Deploy Docs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v4
+        with:
+          auto-update-conda: true
+          python-version: 3.14
+          activate-environment: sphinx-env 
+          environment-file: docs/environment.yml
+          use-mamba: true
+
+      # Ensure env is active for all subsequent steps
+      - name: Initialize shell for conda
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+
+      # Install package into the env 
+      - name: Install package
+        shell: bash -l {0}
+        run: |
+          pip install -e .
+
+      # Build docs
+      - name: Build Sphinx docs
+        shell: bash -l {0}
+        run: |
+          sphinx-build -b html docs/source docs/_build/html
+
+      # ✅ Upload artifact (no repo pollution)
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/_build/html
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

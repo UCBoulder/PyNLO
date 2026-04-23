@@ -11,8 +11,8 @@ Modules
    :caption: Modules
    :recursive:
 
-   pynlo.light
-   pynlo.medium
-   pynlo.device
-   pynlo.model
-   pynlo.utility
+   light
+   medium
+   device
+   model
+   utility
