@@ -22,9 +22,9 @@ sys.path.insert(1, os.path.abspath('..'))
 
 #!!!: modified to use by-source ordering (__dict__ instead of dir)
 #!!!: check git diff after updating sphinx
-import autosummary as new_autosummary
-from sphinx.ext import autosummary
-autosummary.__dict__.update(new_autosummary.__dict__)
+# import autosummary as new_autosummary
+# from sphinx.ext import autosummary
+# autosummary.__dict__.update(new_autosummary.__dict__)
 
 #--- Project information -----------------------------------------------------
 
@@ -45,6 +45,7 @@ html_show_sourcelink = False
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "numpydoc",
     "sphinx.ext.viewcode",
     "nbsphinx",
