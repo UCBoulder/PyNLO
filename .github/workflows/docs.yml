@@ -3,6 +3,8 @@ name: Build and Deploy Docs
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -57,9 +59,9 @@ jobs:
           path: docs/_build/html
 
   deploy:
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
-
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
