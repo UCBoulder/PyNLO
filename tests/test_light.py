@@ -73,7 +73,10 @@ def test_pulse_properties():
     v_0 = 300e12
     e_p = 1
     t_fwhm = 100e-15
+
     test = light.Pulse.Gaussian(n, v_min, v_max, v_0, e_p, t_fwhm)
+    tbw = 4 * np.log(2)/ (2*pi)
+    ac_conversion = 2**.5
 
     #--- Frequency Domain Properties
     assert all(test.a_v == fft.fftshift(test._a_v))
@@ -93,9 +96,11 @@ def test_pulse_properties():
     #--- Methods
     v_w = test.v_width()
     t_w = test.t_width()
-    assert np.isclose(np.log(4)**0.5 / (2*pi*v_w.rms), t_w.fwhm, atol=test.dt)
+    tbw_tol =((test.dv * t_fwhm)**2 + (test.dt* tbw / t_fwhm)**2)**.5
+    assert np.isclose(tbw, v_w.fwhm * t_w.fwhm, atol=tbw_tol)
     ac = test.autocorrelation()
-    assert np.isclose(ac.rms, 2**0.5 * t_w.rms, atol=0)
+    ac_tol = ac_conversion * test.dt
+    assert np.isclose(ac.rms, ac_conversion * t_w.rms, atol=ac_tol)
 
 #--- Exploratory
 if __name__ == "__main__":

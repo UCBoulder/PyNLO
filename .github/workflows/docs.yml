@@ -52,7 +52,7 @@ jobs:
         run: |
           sphinx-build -b html docs/source docs/_build/html
 
-      # ✅ Upload artifact (no repo pollution)
+      # Upload artifact (no repo pollution)
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
