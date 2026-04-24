@@ -32,8 +32,9 @@ jobs:
       - name: Install package
         shell: bash -l {0}
         run: |
-          python -m pip install --upgrade pip
-          pip install -e .
+          conda install -c conda-forge unidep=3
+          unidep install -n pynlo .
+          conda activate pynlo
 
       - name: Install testing dependencies
         run: |
