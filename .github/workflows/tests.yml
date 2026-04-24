@@ -17,8 +17,6 @@ jobs:
         with:
           auto-update-conda: true
           python-version: 3.14
-          activate-environment: sphinx-env 
-          environment-file: docs/environment.yml
           use-mamba: true
 
       # Ensure env is active for all subsequent steps
@@ -37,8 +35,10 @@ jobs:
           conda activate pynlo
 
       - name: Install testing dependencies
+        shell: bash -l {0}
         run: |
           pip install pytest
 
       - name: Run tests
+        shell: bash -l {0}
         run: pytest -v
