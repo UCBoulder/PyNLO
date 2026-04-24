@@ -982,12 +982,12 @@ class Pulse(TFGrid):
         gate_pulses_v = (g_v[:, np.newaxis]
                          * np.exp(-1j*2*pi*delay_t_grid[np.newaxis, :]*v_grid[:, np.newaxis]))
         gate_pulses_t = fft.fftshift(fft.ifft(
-            fft.ifftshift(gate_pulses_v, axis=0), fsc=dt, axis=0, overwrite_x=True), axis=0)
+            fft.ifftshift(gate_pulses_v, axes=0), fsc=dt, axis=0, overwrite_x=True), axes=0)
 
         #---- Spectrogram
         spg_t = a_t[:, np.newaxis] * gate_pulses_t
         spg_v = fft.fftshift(fft.fft(
-            fft.ifftshift(spg_t, axis=0), fsc=dt, axis=0, overwrite_x=True), axis=0)
+            fft.ifftshift(spg_t, axes=0), fsc=dt, axis=0, overwrite_x=True), axes=0)
         p_spg = spg_v.real**2 + spg_v.imag**2
 
         #---- Extent
