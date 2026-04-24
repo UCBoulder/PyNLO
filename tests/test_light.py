@@ -1,27 +1,33 @@
-# -*- coding: utf-8 -*-
 """
 TODO: module docs... testing for pynlo.light methods and classes
 """
 
 # %% Imports
-
 import numpy as np
+import pytest
 from scipy import constants
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
 
 from pynlo import light
 from pynlo.utility import fft
 
-
 # %% Constants
-
 pi = constants.pi
 
 
+PULSE_CLASSES = [
+    light.Pulse.Gaussian,
+    light.Pulse.Sech,
+    light.Pulse.Parabolic,
+    light.Pulse.Lorentzian,
+]
+
 # %% Pulse
 
-def test_pulse_shapes():
+@pytest.mark.parametrize("PulseClass", PULSE_CLASSES)
+def test_pulse_shapes(PulseClass):
+    """
+    Test creation and fundamental properties of each Pulse class
+    """
     v_min = 100e12
     v_max = 500e12
     n = 2**8 + 0
@@ -29,39 +35,25 @@ def test_pulse_shapes():
     e_p = 1
     t_fwhm = 100e-15
 
-    #--- Gaussian Pulse
-    test = light.Pulse.Gaussian(n, v_min, v_max, v_0, e_p, t_fwhm)
-    t_w = test.t_width()
-    assert np.isclose(e_p, test.e_p)
-    assert np.isclose(test.v_grid[test.p_v.argmax()], v_0, atol=test.dv, rtol=0)
-    assert np.isclose(t_w.fwhm, t_fwhm, atol=test.dv, rtol=0)
+    pulse = PulseClass(n, v_min, v_max, v_0, e_p, t_fwhm)
+    t_w = pulse.t_width()
 
-    #--- Sech**2 Pulse
-    test = light.Pulse.Sech(n, v_min, v_max, v_0, e_p, t_fwhm)
-    t_w = test.t_width()
-    assert np.isclose(e_p, test.e_p)
-    assert np.isclose(test.v_grid[test.p_v.argmax()], v_0, atol=test.dv, rtol=0)
-    assert np.isclose(t_w.fwhm, t_fwhm, atol=test.dv, rtol=0)
+    assert np.isclose(e_p, pulse.e_p)
+    assert np.isclose(pulse.v_grid[pulse.p_v.argmax()], v_0, atol=pulse.dv)
+    assert np.isclose(t_w.fwhm, t_fwhm, atol=pulse.dt)
 
-    #--- Parabolic Pulse
-    test = light.Pulse.Parabolic(n, v_min, v_max, v_0, e_p, t_fwhm)
-    t_w = test.t_width()
-    assert np.isclose(e_p, test.e_p)
-    assert np.isclose(test.v_grid[test.p_v.argmax()], v_0, atol=test.dv, rtol=0)
-    assert np.isclose(t_w.fwhm, t_fwhm, atol=test.dv, rtol=0)
 
-    #--- Lorentzian**2 Pulse
-    test = light.Pulse.Lorentzian(n, v_min, v_max, v_0, e_p, t_fwhm)
-    t_w = test.t_width()
-    assert np.isclose(e_p, test.e_p)
-    assert np.isclose(test.v_grid[test.p_v.argmax()], v_0, atol=test.dv, rtol=0)
-    assert np.isclose(t_w.fwhm, t_fwhm, atol=test.dv, rtol=0)
-
-    #--- CW Light
+def test_cw_pulse():
+    v_min = 100e12
+    v_max = 500e12
+    n = 2**8
+    v_0 = 300e12
     p_p = 1
-    test = light.Pulse.CW(n, v_min, v_max, v_0, p_p)
-    assert np.isclose(p_p, test.e_p/test.t_window)
-    assert np.isclose(test.v_grid[test.p_v.argmax()], v_0, atol=test.dv, rtol=0)
+
+    pulse = light.Pulse.CW(n, v_min, v_max, v_0, p_p)
+
+    assert np.isclose(p_p, pulse.e_p / pulse.t_window)
+    assert np.isclose(pulse.v_grid[pulse.p_v.argmax()], v_0, atol=pulse.dv)
 
 def test_pulse_properties():
     """
@@ -74,77 +66,68 @@ def test_pulse_properties():
     e_p = 1
     t_fwhm = 100e-15
 
-    test = light.Pulse.Gaussian(n, v_min, v_max, v_0, e_p, t_fwhm)
-    tbw = 4 * np.log(2)/ (2*pi)
-    ac_conversion = 2**.5
+    pulse = light.Pulse.Gaussian(n, v_min, v_max, v_0, e_p, t_fwhm)
 
-    #--- Frequency Domain Properties
-    assert all(test.a_v == fft.fftshift(test._a_v))
-    assert all(test.p_v == fft.fftshift(test._p_v))
-    assert all(test.phi_v == fft.fftshift(test._phi_v))
-    assert np.allclose(np.log10(test.p_v**0.5 * np.exp(1j*test.phi_v)), np.log10(test.a_v), equal_nan=True)
+    tbw = 4 * np.log(2) / (2 * pi)
+    ac_conversion = 2**0.5
 
-    #--- Time Domain Properties
-    assert all(test.a_t == fft.fftshift(test._a_t))
-    assert all(test.p_t == fft.fftshift(test._p_t))
-    assert all(test.phi_t == fft.fftshift(test._phi_t))
-    assert np.allclose(np.log10(test.p_t**0.5 * np.exp(1j*test.phi_t)), np.log10(test.a_t), equal_nan=True)
-    assert all(test.ra_t == fft.fftshift(test._ra_t))
-    assert all(test.rp_t == fft.fftshift(test._rp_t))
-    assert np.allclose(np.log10(test.rp_t), np.log10(test.ra_t**2), equal_nan=True)
+    # --- Frequency domain consistency
+    assert np.array_equal(pulse.a_v, fft.fftshift(pulse._a_v))
+    assert np.array_equal(pulse.p_v, fft.fftshift(pulse._p_v))
+    assert np.array_equal(pulse.phi_v, fft.fftshift(pulse._phi_v))
 
-    #--- Methods
-    v_w = test.v_width()
-    t_w = test.t_width()
-    tbw_tol =((test.dv * t_fwhm)**2 + (test.dt* tbw / t_fwhm)**2)**.5
+    assert np.allclose(
+        pulse.a_v,
+        pulse.p_v**0.5 * np.exp(1j * pulse.phi_v),
+        equal_nan=True,
+    )
+
+    # --- Time domain consistency
+    assert np.array_equal(pulse.a_t, fft.fftshift(pulse._a_t))
+    assert np.array_equal(pulse.p_t, fft.fftshift(pulse._p_t))
+    assert np.array_equal(pulse.phi_t, fft.fftshift(pulse._phi_t))
+
+    assert np.allclose(
+        pulse.a_t,
+        pulse.p_t**0.5 * np.exp(1j * pulse.phi_t),
+        equal_nan=True,
+    )
+
+    # --- Real-valued representations
+    assert np.array_equal(pulse.ra_t, fft.fftshift(pulse._ra_t))
+    assert np.array_equal(pulse.rp_t, fft.fftshift(pulse._rp_t))
+    assert np.allclose(pulse.rp_t, pulse.ra_t**2, equal_nan=True)
+
+    # --- Width relations
+    v_w = pulse.v_width()
+    t_w = pulse.t_width()
+
+    tbw_tol = ((pulse.dv * t_fwhm) ** 2 + (pulse.dt * tbw / t_fwhm) ** 2) ** 0.5
     assert np.isclose(tbw, v_w.fwhm * t_w.fwhm, atol=tbw_tol)
-    ac = test.autocorrelation()
-    ac_tol = ac_conversion * test.dt
+
+    # --- Autocorrelation scaling
+    ac = pulse.autocorrelation()
+    ac_tol = ac_conversion * pulse.dt
     assert np.isclose(ac.rms, ac_conversion * t_w.rms, atol=ac_tol)
 
-#--- Exploratory
-if __name__ == "__main__":
-    test_pulse_shapes()
-    test_pulse_properties()
-
+@pytest.mark.parametrize("n", [2**7, 2**8, 2**9, 2**10])
+def test_tbw_convergence(n):
     v_min = 100e12
     v_max = 500e12
-    n = 2**8 + 0
     v_0 = 300e12
     e_p = 1
-    t_fwhm = 40e-15
-    test = light.Pulse.Gaussian(n, v_min, v_max, v_0, e_p, t_fwhm)
+    t_fwhm = 100e-15
 
-    # test.phi_v += 2*pi*(.1*1e-12)*test.v_grid
+    pulse = light.Pulse.Gaussian(n, v_min, v_max, v_0, e_p, t_fwhm)
 
-    #--- Complex Envelope
-    plt.figure("Complex Envelope")
-    plt.clf()
-    ax0 = plt.subplot2grid((2,1), (0,0))
-    ax1 = plt.subplot2grid((2,1), (1,0), sharex=ax0)
-    ax0.semilogy(1e12*test.t_grid, test.p_t)
-    ax1.plot(1e12*test.t_grid, 1e-12*test.vg_t)
-    plt.tight_layout()
+    tbw_expected = 4 * np.log(2) / (2 * np.pi)
 
-    #--- Power Spectrum
-    plt.figure("Power Spectrum")
-    plt.clf()
-    ax0 = plt.subplot2grid((2,1), (0,0))
-    ax1 = plt.subplot2grid((2,1), (1,0), sharex=ax0)
-    ax0.semilogy(1e-12*test.v_grid, test.p_v)
-    ax1.plot(1e-12*test.v_grid, 1e12*test.tg_v)
-    plt.tight_layout()
+    v_w = pulse.v_width()
+    t_w = pulse.t_width()
 
-    #--- Autocorrelation
-    ac = test.autocorrelation()
+    tbw = v_w.fwhm * t_w.fwhm
 
-    plt.figure("Autocorrelation")
-    plt.clf()
-    plt.plot(ac.t_grid, ac.ac_t)
+    # tolerance scales with discretization
+    tbw_tol = ((pulse.dv * t_fwhm) ** 2 + (pulse.dt * tbw / t_fwhm) ** 2) ** 0.5
 
-    #--- Spectrogram
-    spg = test.spectrogram()
-    plt.figure("Spectrogram")
-    plt.clf()
-    plt.imshow(10*np.log10(spg.spg), origin="lower", extent=spg.extent, aspect="auto")
-    plt.tight_layout()
+    assert np.isclose(tbw, tbw_expected, atol=tbw_tol)

@@ -24,7 +24,6 @@ dependencies = [
     "numpy>=2,<3",
     "scipy>=1,<2",
     "numba<1",
-    "pyfftw=0.15.1",
+    {conda="pyfftw=0.15.1"},
     "matplotlib"
-
 ]
